@@ -2,6 +2,9 @@
 
 : ${HADOOP_PREFIX:=/usr/local/hadoop}
 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HADOOP_PREFIX/lib/native"
+export HADOOP_HOME=$HADOOP_PREFIX
+
 $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh
 
 rm /tmp/*.pid

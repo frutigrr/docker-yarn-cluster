@@ -2,38 +2,43 @@
 #
 # sudo docker build -t yarn_cluster .
 
-FROM sequenceiq/pam:centos-6.5
-MAINTAINER Luciano Resende lresende@apache.org
+FROM ubuntu:16.04
+MAINTAINER frutigrr
 
 USER root
 
 # install dev tools
-RUN yum clean all && \
-    rpm --rebuilddb && \
-    yum install -y curl which tar sudo openssh-server openssh-clients rsync
+RUN apt-get update && \
+    apt-get install -y curl tar sudo openssh-server openssh-client rsync locate && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    /usr/bin/updatedb
 
 # update libselinux. see https://github.com/sequenceiq/hadoop-docker/issues/14
-RUN yum update -y libselinux
+#RUN yum update -y libselinux
 
 # passwordless ssh
+RUN rm -f /etc/ssh/ssh_host_dsa_key /etc/ssh/ssh_host_rsa_key /root/.ssh/id_rsa
 RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
 RUN ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
 RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
-# java
-RUN curl -LO 'http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.rpm' -H 'Cookie: oraclelicense=accept-securebackup-cookie' && \
-    yum -y install jdk-8u111-linux-x64.rpm && \
-    yum clean all && \
-    rm -vf jdk-8u111-linux-x64.rpm
+# install java
+ENV JAVA_VER 8u151
+ENV JAVA_BUILD b12
+ENV JAVA_VER_BUILD $JAVA_VER-$JAVA_BUILD
+ENV JAVA_URL_KEY /e758a0de34e24606bca991d704f6dcbf
+RUN mkdir -p /usr/java/default && \
+    curl -Ls "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VER_BUILD}${JAVA_URL_KEY}/jdk-${JAVA_VER}-linux-x64.tar.gz" -H 'Cookie: gpw_e24=xxx; oraclelicense=accept-securebackup-cookie;' | \
+    tar --strip-components=1 -xz -C /usr/java/default/
 
-ENV JAVA_HOME /usr/java/default
+ENV JAVA_HOME /usr/java/default/
 ENV PATH $PATH:$JAVA_HOME/bin
-RUN rm /usr/bin/java && ln -s $JAVA_HOME/bin/java /usr/bin/java
 
-# =======
-# hadoop
-RUN curl -s http://www.eu.apache.org/dist/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz | tar -xz -C /usr/local/
+# install hadoop
+# need to build the native library to change version 
+RUN curl -s http://archive.apache.org/dist/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz | tar -xz -C /usr/local/
 RUN cd /usr/local && ln -s ./hadoop-2.7.1 hadoop
 
 ENV HADOOP_PREFIX /usr/local/hadoop
@@ -58,11 +63,13 @@ ADD etc/hadoop/hdfs-site.xml $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
 ADD etc/hadoop/mapred-site.xml $HADOOP_PREFIX/etc/hadoop/mapred-site.xml
 ADD etc/hadoop/yarn-site.xml $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
 
+# format HDFS
 RUN $HADOOP_PREFIX/bin/hdfs namenode -format
 
 # fixing the libhadoop.so like a boss
 RUN rm  /usr/local/hadoop/lib/native/*
 RUN curl -Ls http://github.com/sequenceiq/docker-hadoop-build/releases/download/v2.7.1/hadoop-native-64-2.7.1.tgz  | tar -xz -C /usr/local/hadoop/lib/native/
+RUN echo /usr/local/hadoop/lib/native > /etcld.so.conf.d/hadoop.conf
 
 ADD ssh_config /root/.ssh/config
 RUN chmod 600 /root/.ssh/config
@@ -93,4 +100,5 @@ EXPOSE 19888
 #Yarn ports
 EXPOSE 8030 8031 8032 8033 8040 8042 8088
 #Other ports
-EXPOSE 49707 2122   
+EXPOSE 49707 2122 
+
