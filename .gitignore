@@ -13,3 +13,10 @@
 *.iws
 *.class
 *.log
+
+# arhives
+archives/*.tgz
+archives/*.tar.gz
+archives/*.tar.bz2
+archives/*.zip
+
