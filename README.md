@@ -44,6 +44,14 @@ bin/yarn node -list
 ```
 
 add node names and Ip addresses to /etc/hosts and distribute each node.
+for example, run following commands on the docker host to get and distribute hosts.
+
+```
+docker ps | grep yarn-cluster | awk '/namenode$/ {print $NF} ! /namenode$/ {print $1}' > /tmp/yarn-hostnames
+cat /tmp/yarn-hostnames | xargs -I {} -n 1 docker inspect -f '{{.NetworkSettings.IPAddress}} {{.Config.Hostname}}' {} > /tmp/hosts.tail
+cat hosts /tmp/hosts.tail > /tmp/hosts
+for h in `cat /tmp/yarn-hostnames`; do docker exec -i $h /bin/bash -c 'cat > /etc/hosts' < /tmp/hosts; done
+```
 
 
 You should now be able to access the HDFS Admin UI at
