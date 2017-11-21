@@ -41,6 +41,10 @@ sbin/start-yarn.sh
 
 bin/yarn rmadmin -refreshNodes
 bin/yarn node -list
+
+# you may need to start job history server to run map reduce jobs
+sbin/mr-jobhistory-daemon.sh start historyserver
+
 ```
 
 add node names and Ip addresses to /etc/hosts and distribute each node.
