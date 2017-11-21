@@ -59,7 +59,7 @@ RUN cp $HADOOP_PREFIX/etc/hadoop/*.xml $HADOOP_PREFIX/input
 RUN cp -r $HADOOP_PREFIX/etc/hadoop $HADOOP_PREFIX/etc/original
 
 # pseudo distributed
-ADD etc/hadoop/core-site.xml $HADOOP_PREFIX/etc/hadoop/core-site.xml
+ADD etc/hadoop/core-site.xml.template $HADOOP_PREFIX/etc/hadoop/core-site.xml.template
 #RUN sed s/HOSTNAME/localhost/ /usr/local/hadoop/etc/hadoop/core-site.xml.template > /usr/local/hadoop/etc/hadoop/core-site.xml
 ADD etc/hadoop/hdfs-site.xml $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
 

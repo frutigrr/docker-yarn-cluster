@@ -15,11 +15,18 @@ cd $HADOOP_PREFIX/share/hadoop/common ; for cp in ${ACP//,/ }; do  echo == $cp; 
 service ssh start
 
 if [[ $1 = "-namenode" || $2 = "-namenode" ]]; then
+  # altering the core-site configuration
+  sed s/HOSTNAME/$HOSTNAME/ $HADOOP_PREFIX/etc/hadoop/core-site.xml.template > $HADOOP_PREFIX/etc/hadoop/core-site.xml
+
   $HADOOP_PREFIX/sbin/start-dfs.sh
   $HADOOP_PREFIX/sbin/start-yarn.sh
 fi
 
 if [[ $1 = "-datanode" || $2 = "-datanode" ]]; then
+  NAMENODE=$3
+  if [[ $NAMENODE = "" ]]; then NAMENODE=namenode; fi
+  sed s/HOSTNAME/$NAMENODE/ $HADOOP_PREFIX/etc/hadoop/core-site.xml.template > $HADOOP_PREFIX/etc/hadoop/core-site.xml
+
   $HADOOP_PREFIX/sbin/start-dfs.sh
 fi
 
