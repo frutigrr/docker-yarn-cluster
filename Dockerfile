@@ -79,8 +79,9 @@ RUN chmod 600 /root/.ssh/config
 RUN chown root:root /root/.ssh/config
 
 ADD bootstrap.sh /etc/bootstrap.sh
-RUN chown root:root /etc/bootstrap.sh
-RUN chmod 700 /etc/bootstrap.sh
+ADD bootcmd.sh /etc/bootcmd.sh
+RUN chown root:root /etc/bootstrap.sh /etc/bootcmd.sh
+RUN chmod 700 /etc/bootstrap.sh /etc/bootcmd.sh
 
 ENV BOOTSTRAP /etc/bootstrap.sh
 
