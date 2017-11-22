@@ -57,6 +57,14 @@ cat hosts /tmp/hosts.tail > /tmp/hosts
 for h in `cat /tmp/yarn-hostnames`; do docker exec -i $h /bin/bash -c 'cat > /etc/hosts' < /tmp/hosts; done
 ```
 
+Data nodes always start with secondary name node. you can stop it following.
+
+```
+cd $HADOOP_PREFIX
+#sbin/hadoop-daemon.sh stop secondarynamenode
+sbin/stop-dfs.sh
+sbin/hadoop-daemon.sh start datanode
+```
 
 You should now be able to access the HDFS Admin UI at
 
