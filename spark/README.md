@@ -25,9 +25,26 @@ docker run -d my/yarn-cluster-spark:2.2.0 /etc/bootstrap.sh -datanode -d
 ```
 $HADOOP_PREFIX/sbin/stop-yarn.sh
 cd $SPARK_HOME
-cp -r yarn-remote-client/*.template $HADOOP_PREFIX/etc/hadoop
+cp -r yarn-remote-client/\*.template $HADOOP_PREFIX/etc/hadoop
 yarn-remote-client/bootcmd.sh -namenode # or use -datanode 
 # run $HADOOP_PREFIX/sbin/start-yarn.sh if datanode
+```
+
+
+* Run with docker-compose
+
+```
+docker-compose -f docker-compose.yml up -d
+
+docker exec -it namenode /bin/bash
+
+# within namenode
+  # jps
+  # ssh root@172.17.0.3 /usr/local/hadoop/sbin/start-yarn.sh
+  # echo 172.17.0.3 datanode >> /etc/hosts
+  # bin/run-example --master yarn --deploy-mode cluster SparkPi 10
+  # yarn logs -applicationId <appId>
+
 ```
 
 
