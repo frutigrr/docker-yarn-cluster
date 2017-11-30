@@ -18,6 +18,8 @@ RUN cd /usr/local && ln -s spark-2.2.0-bin-hadoop2.7 spark
 ENV SPARK_HOME /usr/local/spark
 RUN mkdir $SPARK_HOME/yarn-remote-client
 ADD yarn-remote-client $SPARK_HOME/yarn-remote-client
+COPY yarn-remote-client/core-site.xml.spark.template $HADOOP_PREFIX/etc/hadoop/
+COPY yarn-remote-client/yarn-site.xml.spark.template $HADOOP_PREFIX/etc/hadoop/
 COPY log4j.properties $SPARK_HOME/conf/log4j.properties
 
 
@@ -31,8 +33,9 @@ ENV YARN_CONF_DIR $HADOOP_PREFIX/etc/hadoop
 ENV PATH $PATH:$SPARK_HOME/bin:$HADOOP_PREFIX/bin
 # update boot script
 COPY bootstrap.sh /etc/bootstrap.sh
-RUN chown root.root /etc/bootstrap.sh
-RUN chmod 700 /etc/bootstrap.sh
+COPY yarn-remote-client/bootcmd.sh /etc/bootcmd.sh
+RUN chown root.root /etc/bootstrap.sh /etc/bootcmd.sh
+RUN chmod 700 /etc/bootstrap.sh /etc/bootcmd.sh
 
 CMD ["/etc/bootstrap.sh", "-d"]
 
