@@ -1,13 +1,13 @@
 
 
-* Build Image
+# Build Image
 
 ```
 docker build --rm -t my/yarn-cluster-spark:2.2.0 .
 ````
 
 
-* Run Image
+# Run Image
 
 ```
 docker run --rm -it -p 8088:8088 -p 8042:8042 -p 4040:4040 -h namenode my/yarn-cluster-spark:2.2.0 /etc/bootstrap.sh -namenode -bash
@@ -20,7 +20,7 @@ or
 docker run -d my/yarn-cluster-spark:2.2.0 /etc/bootstrap.sh -datanode -d
 ```
 
-* Run Yarn
+# Run Yarn
 
 ```
 $HADOOP_PREFIX/sbin/stop-yarn.sh
@@ -31,7 +31,7 @@ yarn-remote-client/bootcmd.sh -namenode # or use -datanode
 ```
 
 
-* Run with docker-compose
+# Run with docker-compose
 
 ```
 docker-compose -f docker-compose.yml up -d
@@ -48,7 +48,7 @@ docker exec -it namenode /bin/bash
 ```
 
 
-* Test Hadoop
+# Test Hadoop
 
 ```
 cd $HADOOP_PREFIX
@@ -57,7 +57,7 @@ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0.jar grep i
 bin/hdfs dfs -cat output/\*
 ```
 
-* Test Spark
+# Test Spark
 
 ```
 export LD_LIBRARY_PATH=$HADOOP_PREFIX/lib/native
@@ -88,7 +88,7 @@ spark-submit --class org.apache.spark.examples.SparkPi \
 ```
 
 
-* Debugging
+# Debugging
 
 following variable in yarn-site.xml helps to debug yarn failure with 'yarn logs -applicationId <appId>'
 
@@ -107,7 +107,7 @@ log4j.logger.org.apache.hadoop=DEBUG
 
 
 
-*  Original
+#  Original 
 
 [docker-spark](https://github.com/sequenceiq/docker-spark)
 [docker-hadoop-ubuntu](https://github.com/sequenceiq/docker-hadoop-ubuntu)
